@@ -4,11 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsTabProvider extends ChangeNotifier {
   ThemeMode currentTheme = ThemeMode.light;
 
-  bool get isLight => currentTheme == ThemeMode.light;
-
   String get theme => currentTheme == ThemeMode.light ? 'Light' : 'Dark';
 
   String get lang => languageCode == 'en' ? 'English' : 'العربية';
+
+  bool get isLight => currentTheme == ThemeMode.light;
 
   void changeTheme(String? val) {
     if ((val == null) ||

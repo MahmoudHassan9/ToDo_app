@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/core/light_app_styles.dart';
+import 'package:todo_app/core/utils/light_app_styles.dart';
 import 'package:todo_app/presentation/screens/home/tabs/settings_tab/settings_tab.dart';
 import 'package:todo_app/presentation/screens/home/tabs/settings_tab/widgets/settings_tab_widget.dart';
 

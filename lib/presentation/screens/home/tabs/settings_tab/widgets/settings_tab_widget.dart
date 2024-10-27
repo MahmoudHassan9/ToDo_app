@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/app_colors.dart';
-import 'package:todo_app/core/light_app_styles.dart';
+import 'package:todo_app/core/utils/app_colors.dart';
+import 'package:todo_app/core/utils/light_app_styles.dart';
 
 class BuildSettingWidget extends StatelessWidget {
   const BuildSettingWidget({
@@ -19,7 +19,6 @@ class BuildSettingWidget extends StatelessWidget {
       margin: const EdgeInsets.only(
         left: 56,
         right: 37,
-
       ),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -32,7 +31,7 @@ class BuildSettingWidget extends StatelessWidget {
       child: ListTile(
         title: Text(
           text,
-style: LightAppStyles.settingsTabListTileTitle,
+          style: LightAppStyles.settingsTabListTileTitle,
         ),
         trailing: widget,
       ),

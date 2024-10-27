@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/app_colors.dart';
 import 'package:todo_app/presentation/screens/home/tabs/settings_tab/settings_tab.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/tasks_tab.dart';
+import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/add_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,8 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildBottomNavBar() => BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
+        notchMargin: 10,
         clipBehavior: Clip.hardEdge,
+        padding: EdgeInsets.zero,
         child: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: (index) {
@@ -66,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
       );
 
   Widget buildFloatingActionButton() => FloatingActionButton(
-
-        onPressed: () {},
+        onPressed: () => AddBottomSheet.show(context),
         child: const Icon(
           Icons.add,
+          color: Colors.white,
         ),
       );
 }
