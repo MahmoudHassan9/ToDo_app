@@ -43,7 +43,7 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
         children: [
           Text(
             'Add new Task',
-            style: LightAppStyles.bottomSheetTitle,
+            style: LightAppStyles.poppinsFontWeight700Size18,
           ),
           const SizedBox(
             height: 15,
@@ -65,7 +65,7 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
           ),
           Text(
             'Select Date :',
-            style: LightAppStyles.bottomSheetTitle,
+            style: LightAppStyles.poppinsFontWeight700Size18,
           ),
           TextButton(
             onPressed: () async {

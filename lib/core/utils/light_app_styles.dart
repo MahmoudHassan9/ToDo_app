@@ -19,7 +19,7 @@ class LightAppStyles {
     fontWeight: FontWeight.w400,
     color: AppColors.blue,
   );
-  static TextStyle bottomSheetTitle = GoogleFonts.poppins(
+  static TextStyle poppinsFontWeight700Size18 = GoogleFonts.poppins(
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: Colors.blue,
@@ -32,5 +32,9 @@ class LightAppStyles {
   static TextStyle buttonText = GoogleFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.w700,
+  );
+  static TextStyle taskItemDesc = GoogleFonts.roboto(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
   );
 }

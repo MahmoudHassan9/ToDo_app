@@ -5,6 +5,7 @@ import '../../core/utils/light_app_styles.dart';
 
 class AppTheme {
   static ThemeData light = ThemeData(
+    useMaterial3: true,
     primaryColor: AppColors.blue,
     scaffoldBackgroundColor: AppColors.scaffold,
     colorScheme: ColorScheme.fromSeed(
