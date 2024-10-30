@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/settings_tab_provider.dart';
 
@@ -13,13 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SettingsTabProvider settingsTabProvider = Provider.of(context);
-    return MaterialApp(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.light,
-      debugShowCheckedModeBanner: false,
-      onGenerateRoute: AppRouter.router,
-      initialRoute: AppRoutes.home,
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      builder: (context, child) {
+        return MaterialApp(
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: ThemeMode.light,
+          debugShowCheckedModeBanner: false,
+          onGenerateRoute: AppRouter.router,
+          initialRoute: AppRoutes.home,
+        );
+      },
     );
   }
 }
