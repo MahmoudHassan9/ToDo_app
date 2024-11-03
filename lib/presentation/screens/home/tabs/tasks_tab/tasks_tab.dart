@@ -48,19 +48,23 @@ class _TasksTabState extends State<TasksTab> {
     );
   }
 
-  Widget buildCalenderTimeLine() => EasyInfiniteDateTimeLine(
+  Widget buildCalenderTimeLine() =>
+      EasyInfiniteDateTimeLine(
         controller: controller,
         firstDate: DateTime(
-          DateTime.now().year,
+          DateTime
+              .now()
+              .year,
         ),
         focusDate: selectedDate,
         lastDate: DateTime(
-          DateTime.now()
+          DateTime
+              .now()
               .add(
-                const Duration(
-                  days: 365,
-                ),
-              )
+            const Duration(
+              days: 365,
+            ),
+          )
               .year,
         ),
         onDateChange: (dateSelected) {
