@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_app/core/utils/app_assets.dart';
 import 'package:todo_app/core/utils/app_colors.dart';
 import 'package:todo_app/core/utils/light_app_styles.dart';
+import 'package:todo_app/data/models/todo_model.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/tasks_tab.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/task_item.dart';
 
@@ -13,12 +15,20 @@ class TasksTab extends StatefulWidget {
   const TasksTab({super.key});
 
   @override
-  State<TasksTab> createState() => _TasksTabState();
+  State<TasksTab> createState() => TasksTabState();
 }
 
-class _TasksTabState extends State<TasksTab> {
+class TasksTabState extends State<TasksTab> {
   EasyInfiniteDateTimelineController? controller;
   DateTime selectedDate = DateTime.now();
+  List<TodoDM> todos = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTodosFromFireStore();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,37 +50,37 @@ class _TasksTabState extends State<TasksTab> {
         ),
         Expanded(
           child: ListView.builder(
-            itemBuilder: (context, index) => const TaskItem(),
-            itemCount: 1,
+            itemBuilder: (context, index) => TaskItem(
+              model: todos[index],
+              onDelete: () {
+                getTodosFromFireStore();
+              },
+            ),
+            itemCount: todos.length,
           ),
         ),
       ],
     );
   }
 
-  Widget buildCalenderTimeLine() =>
-      EasyInfiniteDateTimeLine(
+  Widget buildCalenderTimeLine() => EasyInfiniteDateTimeLine(
         controller: controller,
         firstDate: DateTime(
-          DateTime
-              .now()
-              .year,
+          DateTime.now().year,
         ),
         focusDate: selectedDate,
         lastDate: DateTime(
-          DateTime
-              .now()
+          DateTime.now()
               .add(
-            const Duration(
-              days: 365,
-            ),
-          )
+                const Duration(
+                  days: 365,
+                ),
+              )
               .year,
         ),
         onDateChange: (dateSelected) {
-          setState(() {
-            selectedDate = dateSelected;
-          });
+          selectedDate = dateSelected;
+          getTodosFromFireStore();
         },
         dayProps: EasyDayProps(
           activeDayStyle: DayStyle(
@@ -119,4 +129,28 @@ class _TasksTabState extends State<TasksTab> {
         ),
         showTimelineHeader: false,
       );
+
+  Future<void> getTodosFromFireStore() async {
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    QuerySnapshot querySnapshot = await collectionReference
+        .where(
+          'dateTime',
+          isEqualTo: selectedDate.copyWith(
+            hour: 0,
+            microsecond: 0,
+            millisecond: 0,
+            minute: 0,
+            second: 0,
+          ),
+        )
+        .get();
+    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+    todos = documents.map((docSnapShot) {
+      Map<String, dynamic> json = docSnapShot.data() as Map<String, dynamic>;
+      TodoDM todo = TodoDM.fromJson(json);
+      return todo;
+    }).toList();
+    setState(() {});
+  }
 }

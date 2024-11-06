@@ -1,12 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_app/core/utils/app_assets.dart';
 import 'package:todo_app/core/utils/app_colors.dart';
 import 'package:todo_app/core/utils/light_app_styles.dart';
+import 'package:todo_app/data/models/todo_model.dart';
+import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/tasks_tab.dart';
 
-class TaskItem extends StatelessWidget {
-  const TaskItem({super.key});
+class TaskItem extends StatefulWidget {
+  const TaskItem({
+    super.key,
+    required this.model,
+    required this.onDelete,
+  });
+
+  final TodoDM model;
+  final Function onDelete;
+
+  @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
+  GlobalKey<TasksTabState> tasksTabKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +44,10 @@ class TaskItem extends StatelessWidget {
                 topLeft: Radius.circular(15),
                 bottomLeft: Radius.circular(15),
               ),
-              onPressed: (context) {},
+              onPressed: (context) {
+                deleteTodo();
+                widget.onDelete();
+              },
               backgroundColor: AppColors.red,
               foregroundColor: AppColors.white,
               icon: Icons.delete,
@@ -57,12 +77,16 @@ class TaskItem extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             leading: buildListTileLeading(),
             title: Text(
-              'title',
+              widget.model.title!,
               style: LightAppStyles.poppinsFontWeight700Size18,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
-              'descrption',
+              widget.model.description!,
               style: LightAppStyles.taskItemDesc,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
             trailing: buildListTileTrailing(),
           ),
@@ -104,5 +128,13 @@ class TaskItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> deleteTodo() async {
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    DocumentReference documentReference =
+        collectionReference.doc(widget.model.id);
+    await documentReference.delete();
   }
 }

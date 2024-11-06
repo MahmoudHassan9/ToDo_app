@@ -13,10 +13,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
-  List<Widget> tabs = const [
-    TasksTab(),
-    SettingsTab(),
-  ];
+  List<Widget> tabs = [];
+  GlobalKey<TasksTabState> tasksTabKey = GlobalKey();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tabs = [
+      TasksTab(
+        key: tasksTabKey,
+      ),
+      const SettingsTab(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildBottomNavBar() => BottomAppBar(
+  Widget buildBottomNavBar() =>
+      BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 10,
         clipBehavior: Clip.hardEdge,
@@ -66,8 +77,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
-  Widget buildFloatingActionButton() => FloatingActionButton(
-        onPressed: () => AddBottomSheet.show(context),
+  Widget buildFloatingActionButton() =>
+      FloatingActionButton(
+        onPressed: () async {
+          await AddBottomSheet.show(context);
+          tasksTabKey.currentState?.getTodosFromFireStore();
+        },
         child: const Icon(
           Icons.add,
           color: Colors.white,
