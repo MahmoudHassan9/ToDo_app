@@ -63,10 +63,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             hintText: 'Task title',
             controller: titleController,
             filledColor:
-            Provider.of<SettingsTabProvider>(context).currentTheme ==
-                ThemeMode.dark
-                ? AppColors.blackAccent
-                : null,
+                Provider.of<SettingsTabProvider>(context).currentTheme ==
+                        ThemeMode.dark
+                    ? AppColors.blackAccent
+                    : null,
           ),
           SizedBox(
             height: 10.h,
@@ -75,10 +75,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             hintText: 'Task description',
             controller: descController,
             filledColor:
-            Provider.of<SettingsTabProvider>(context).currentTheme ==
-                ThemeMode.dark
-                ? AppColors.blackAccent
-                : null,
+                Provider.of<SettingsTabProvider>(context).currentTheme ==
+                        ThemeMode.dark
+                    ? AppColors.blackAccent
+                    : null,
           ),
           SizedBox(
             height: 10.h,
@@ -136,7 +136,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   onPressed: () async {
                     await update();
                     tasksTabKey.currentState?.getTodosFromFireStore();
-                    if(context.mounted){
+                    if (context.mounted) {
                       AppDialogs.showMessage(
                         context,
                         message: 'Updated Successfully',
@@ -144,7 +144,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       );
                       AppDialogs.removeDialog(context);
                     }
-
                   },
                 ),
               ),

@@ -86,7 +86,16 @@ class AppTheme {
       headerBackgroundColor: AppColors.blue,
       headerForegroundColor: Colors.white,
       backgroundColor: AppColors.blackAccent,
-
+      dividerColor: AppColors.blackAccent,
+      dayForegroundColor: WidgetStatePropertyAll(
+        Colors.white,
+      ),
+      yearForegroundColor: WidgetStatePropertyAll(
+        Colors.white,
+      ),
+      todayForegroundColor: WidgetStatePropertyAll(
+        Colors.white,
+      ),
     ),
   );
 }
