@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/core/utils/app_assets.dart';
 import 'package:todo_app/core/utils/app_colors.dart';
 import 'package:todo_app/core/utils/light_app_styles.dart';
+import 'package:todo_app/data/firebase_services.dart';
 import 'package:todo_app/data/models/todo_model.dart';
+import 'package:todo_app/data/models/user_model.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/tasks_tab.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/task_item.dart';
+import 'package:todo_app/providers/settings_tab_provider.dart';
 
 class TasksTab extends StatefulWidget {
   const TasksTab({super.key});
@@ -20,18 +25,18 @@ class TasksTab extends StatefulWidget {
 
 class TasksTabState extends State<TasksTab> {
   EasyInfiniteDateTimelineController? controller;
-  DateTime selectedDate = DateTime.now();
   List<TodoDM> todos = [];
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getTodosFromFireStore();
   }
 
   @override
   Widget build(BuildContext context) {
+    SettingsTabProvider settingsTabProvider = Provider.of(context);
     return Column(
       children: [
         Stack(
@@ -44,7 +49,7 @@ class TasksTabState extends State<TasksTab> {
               padding: EdgeInsets.symmetric(
                 vertical: 30.h,
               ),
-              child: buildCalenderTimeLine(),
+              child: buildCalenderTimeLine(settingsTabProvider),
             ),
           ],
         ),
@@ -52,9 +57,6 @@ class TasksTabState extends State<TasksTab> {
           child: ListView.builder(
             itemBuilder: (context, index) => TaskItem(
               model: todos[index],
-              onDelete: () {
-                getTodosFromFireStore();
-              },
             ),
             itemCount: todos.length,
           ),
@@ -63,7 +65,8 @@ class TasksTabState extends State<TasksTab> {
     );
   }
 
-  Widget buildCalenderTimeLine() => EasyInfiniteDateTimeLine(
+  Widget buildCalenderTimeLine(SettingsTabProvider provider) =>
+      EasyInfiniteDateTimeLine(
         controller: controller,
         firstDate: DateTime(
           DateTime.now().year,
@@ -81,44 +84,63 @@ class TasksTabState extends State<TasksTab> {
         onDateChange: (dateSelected) {
           selectedDate = dateSelected;
           getTodosFromFireStore();
+          setState(() {});
         },
         dayProps: EasyDayProps(
           activeDayStyle: DayStyle(
-            monthStrStyle: LightAppStyles.calenderDayMonth,
-            dayNumStyle: LightAppStyles.calenderDayNum,
-            dayStrStyle: LightAppStyles.calendarDayStr,
+            monthStrStyle: LightAppStyles.activeCalenderDayMonth,
+            dayNumStyle: LightAppStyles.activeCalenderDayNum,
+            dayStrStyle: LightAppStyles.activeCalendarDayStr,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: provider.currentTheme == ThemeMode.light
+                  ? AppColors.white
+                  : AppColors.blackAccent,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           inactiveDayStyle: DayStyle(
-            monthStrStyle: LightAppStyles.calenderDayMonth.copyWith(
-              color: Colors.black,
-            ),
-            dayNumStyle: LightAppStyles.calenderDayNum.copyWith(
-              color: Colors.black,
-            ),
-            dayStrStyle: LightAppStyles.calendarDayStr.copyWith(
-              color: Colors.black,
-            ),
+            monthStrStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalenderDayMonth
+                : LightAppStyles.inactiveCalenderDayMonth.copyWith(
+                    color: Colors.white,
+                  ),
+            dayNumStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalenderDayNum
+                : LightAppStyles.inactiveCalenderDayNum.copyWith(
+                    color: Colors.white,
+                  ),
+            dayStrStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalendarDayStr
+                : LightAppStyles.inactiveCalendarDayStr.copyWith(
+                    color: Colors.white,
+                  ),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: provider.currentTheme == ThemeMode.light
+                  ? AppColors.white
+                  : AppColors.blackAccent,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           todayStyle: DayStyle(
-            monthStrStyle: LightAppStyles.calenderDayMonth.copyWith(
-              color: Colors.black,
-            ),
-            dayNumStyle: LightAppStyles.calenderDayNum.copyWith(
-              color: Colors.black,
-            ),
-            dayStrStyle: LightAppStyles.calendarDayStr.copyWith(
-              color: Colors.black,
-            ),
+            monthStrStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalenderDayMonth
+                : LightAppStyles.inactiveCalenderDayMonth.copyWith(
+                    color: Colors.white,
+                  ),
+            dayNumStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalenderDayNum
+                : LightAppStyles.inactiveCalenderDayNum.copyWith(
+                    color: Colors.white,
+                  ),
+            dayStrStyle: provider.currentTheme == ThemeMode.light
+                ? LightAppStyles.inactiveCalendarDayStr
+                : LightAppStyles.inactiveCalendarDayStr.copyWith(
+                    color: Colors.white,
+                  ),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: provider.currentTheme == ThemeMode.light
+                  ? AppColors.white
+                  : AppColors.blackAccent,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: AppColors.blue,
@@ -131,8 +153,10 @@ class TasksTabState extends State<TasksTab> {
       );
 
   Future<void> getTodosFromFireStore() async {
-    CollectionReference collectionReference =
-        FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    CollectionReference collectionReference = FirebaseFirestore.instance
+        .collection(UserDM.collectionName)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection(TodoDM.collectionName);
     QuerySnapshot querySnapshot = await collectionReference
         .where(
           'dateTime',

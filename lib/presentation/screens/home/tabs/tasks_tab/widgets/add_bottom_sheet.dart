@@ -1,17 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/core/extensions/date_time_ex.dart';
+import 'package:todo_app/core/utils/app_colors.dart';
+import 'package:todo_app/core/utils/app_dialogs.dart';
 import 'package:todo_app/core/utils/light_app_styles.dart';
+import 'package:todo_app/data/firebase_services.dart';
 import 'package:todo_app/data/models/todo_model.dart';
+import 'package:todo_app/data/models/user_model.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/custom_button.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/custom_text_form_field.dart';
+import 'package:todo_app/providers/settings_tab_provider.dart';
 
 class AddBottomSheet extends StatefulWidget {
   const AddBottomSheet({super.key});
 
   @override
-  State<AddBottomSheet> createState() => _AddBottomSheetState();
+  State<AddBottomSheet> createState() => AddBottomSheetState();
 
   static Future show(context) {
     return showModalBottomSheet(
@@ -19,14 +26,16 @@ class AddBottomSheet extends StatefulWidget {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-            topRight: Radius.circular(15), topLeft: Radius.circular(15)),
+          topRight: Radius.circular(30),
+          topLeft: Radius.circular(30),
+        ),
       ),
       builder: (context) => const AddBottomSheet(),
     );
   }
 }
 
-class _AddBottomSheetState extends State<AddBottomSheet> {
+class AddBottomSheetState extends State<AddBottomSheet> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   DateTime selectedDate = DateTime.now();
@@ -35,6 +44,10 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Provider.of<SettingsTabProvider>(context).currentTheme ==
+              ThemeMode.light
+          ? AppColors.white
+          : AppColors.darkBlue,
       padding: EdgeInsets.only(
         top: 22,
         left: 16,
@@ -56,6 +69,11 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
             CustomTextFormField(
               hintText: 'Enter Task Name',
               controller: titleController,
+              filledColor:
+                  Provider.of<SettingsTabProvider>(context).currentTheme ==
+                          ThemeMode.dark
+                      ? AppColors.blackAccent
+                      : null,
               validator: (val) {
                 if (val == null || val.trim().isEmpty) {
                   return 'Task name required...';
@@ -69,6 +87,11 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
             CustomTextFormField(
               hintText: 'Description...',
               controller: descriptionController,
+              filledColor:
+              Provider.of<SettingsTabProvider>(context).currentTheme ==
+                  ThemeMode.dark
+                  ? AppColors.blackAccent
+                  : null,
               validator: (val) {
                 if (val == null || val.trim().isEmpty) {
                   return 'Description required...';
@@ -86,7 +109,9 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
             ),
             TextButton(
               onPressed: () async {
-                var date = await showTimePicker(context);
+                var date = await showTimePickerr(
+                  context,
+                );
                 if (date != null) {
                   selectedDate = date;
                   setState(() {});
@@ -104,9 +129,18 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
               child: CustomButton(
                 text: 'Add Task',
                 onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    await setTodosToFireStore();
+                  if (!formKey.currentState!.validate()) return;
+                  AppDialogs.showDialogWaiting(context);
+                  await setTodosToFireStore();
+                  if (context.mounted) {
+                    AppDialogs.removeDialog(context);
+                    AppDialogs.showMessage(
+                      context,
+                      message: 'Added Successfully',
+                      color: Colors.green,
+                    );
                   }
+
                   titleController.clear();
                   descriptionController.clear();
                 },
@@ -118,22 +152,24 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
     );
   }
 
-  Future<DateTime?> showTimePicker(context) {
-    return showDatePicker(
-      context: context,
-      firstDate: DateTime.now(),
-      initialDate: selectedDate,
-      lastDate: DateTime.now().add(
-        const Duration(
-          days: 365,
-        ),
-      ),
-    );
-  }
+  // Future<DateTime?> showTimePicker(context) {
+  //   return showDatePicker(
+  //     context: context,
+  //     firstDate: DateTime.now(),
+  //     initialDate: selectedDate,
+  //     lastDate: DateTime.now().add(
+  //       const Duration(
+  //         days: 365,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Future<void> setTodosToFireStore() async {
-    CollectionReference collectionReference =
-        FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    CollectionReference collectionReference = FirebaseFirestore.instance
+        .collection(UserDM.collectionName)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection(TodoDM.collectionName);
     DocumentReference documentReference = collectionReference.doc();
 
     TodoDM model = TodoDM(
@@ -148,13 +184,23 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
         second: 0,
       ),
     );
-    documentReference.set(model.toJson()).timeout(
-      const Duration(
-        milliseconds: 500,
+    documentReference.set(model.toJson()).then((val) {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
+  Future<DateTime?> showTimePickerr(
+    context,
+  ) {
+    return showDatePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      initialDate: selectedDate,
+      lastDate: DateTime.now().add(
+        const Duration(
+          days: 365,
+        ),
       ),
-      onTimeout: () {
-        if (context.mounted) Navigator.of(context).pop();
-      },
     );
   }
 }

@@ -4,6 +4,8 @@ import 'package:todo_app/presentation/screens/home/tabs/settings_tab/settings_ta
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/tasks_tab.dart';
 import 'package:todo_app/presentation/screens/home/tabs/tasks_tab/widgets/add_bottom_sheet.dart';
 
+GlobalKey<TasksTabState> tasksTabKey = GlobalKey();
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -14,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   List<Widget> tabs = [];
-  GlobalKey<TasksTabState> tasksTabKey = GlobalKey();
 
   @override
   void initState() {
@@ -48,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildBottomNavBar() =>
-      BottomAppBar(
+  Widget buildBottomNavBar() => BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 10,
         clipBehavior: Clip.hardEdge,
@@ -77,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
-  Widget buildFloatingActionButton() =>
-      FloatingActionButton(
+  Widget buildFloatingActionButton() => FloatingActionButton(
         onPressed: () async {
           await AddBottomSheet.show(context);
           tasksTabKey.currentState?.getTodosFromFireStore();
