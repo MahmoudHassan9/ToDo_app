@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           themeMode: settingsTabProvider.currentTheme,
           debugShowCheckedModeBanner: false,
           onGenerateRoute: AppRouter.router,
-          initialRoute: AppRoutes.home,
+          initialRoute: AppRoutes.splash,
         );
       },
     );
