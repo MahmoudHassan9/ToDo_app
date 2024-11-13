@@ -52,9 +52,15 @@ class _TaskItemState extends State<TaskItem> {
               ),
               onPressed: (context) {
                 MyFireBaseServices.deleteTodo(
+                  context,
                   id: widget.model.id!,
                 );
                 tasksTabKey.currentState!.getTodosFromFireStore();
+                AppDialogs.showMessage(
+                  context,
+                  message: 'Deleted successfully',
+                  color: Colors.red,
+                );
               },
               backgroundColor: AppColors.red,
               foregroundColor: AppColors.white,

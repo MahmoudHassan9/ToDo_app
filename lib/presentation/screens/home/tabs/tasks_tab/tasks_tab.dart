@@ -53,6 +53,7 @@ class TasksTabState extends State<TasksTab> {
             ),
           ],
         ),
+        if (todos.isEmpty) noTasksYet(),
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) => TaskItem(
@@ -177,4 +178,12 @@ class TasksTabState extends State<TasksTab> {
     }).toList();
     setState(() {});
   }
+
+  Widget noTasksYet() => Center(
+        child: Text(
+          'NO Task Yet ! ',
+          style: LightAppStyles.settingsTabLabel
+              .copyWith(color: Colors.white, fontSize: 25.sp),
+        ),
+      );
 }

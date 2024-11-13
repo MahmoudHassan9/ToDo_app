@@ -155,7 +155,7 @@ abstract class MyFireBaseServices {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection(TodoDM.collectionName);
 
-  static Future<void> deleteTodo({required String id}) async {
+  static Future<void> deleteTodo(context, {required String id}) async {
     DocumentReference documentReference = todosCollection.doc(id);
     await documentReference.delete();
   }

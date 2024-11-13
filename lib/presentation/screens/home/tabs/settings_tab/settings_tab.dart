@@ -47,12 +47,12 @@ class _SettingsTabState extends State<SettingsTab> {
                     child: Text(
                       'Language',
                       style: Provider.of<SettingsTabProvider>(context)
-                          .currentTheme ==
-                          ThemeMode.light
+                                  .currentTheme ==
+                              ThemeMode.light
                           ? LightAppStyles.settingsTabLabel
                           : LightAppStyles.settingsTabLabel.copyWith(
-                        color: Colors.white,
-                      ),
+                              color: Colors.white,
+                            ),
                     ),
                   ),
                   BuildSettingWidget(
@@ -77,12 +77,12 @@ class _SettingsTabState extends State<SettingsTab> {
                     child: Text(
                       'Mode',
                       style: Provider.of<SettingsTabProvider>(context)
-                          .currentTheme ==
-                          ThemeMode.light
+                                  .currentTheme ==
+                              ThemeMode.light
                           ? LightAppStyles.settingsTabLabel
                           : LightAppStyles.settingsTabLabel.copyWith(
-                        color: Colors.white,
-                      ),
+                              color: Colors.white,
+                            ),
                     ),
                   ),
                   BuildSettingWidget(

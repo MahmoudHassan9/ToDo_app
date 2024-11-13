@@ -115,6 +115,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   color: Colors.red,
                   onPressed: () {
                     MyFireBaseServices.deleteTodo(
+                      context,
                       id: widget.model.id!,
                     );
                     tasksTabKey.currentState?.getTodosFromFireStore();
